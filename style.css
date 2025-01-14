@@ -1,0 +1,96 @@
+html {
+    height: 100%;
+    width: 100%;
+    scroll-behavior: smooth;
+    font-size: 1rem;
+}
+
+body {
+    margin: 0;
+    color: rgb(255, 252, 232);
+    background-color: #21201a;
+}
+
+.mains {
+    display: flex;
+    gap: .5rem;
+    flex-direction: row;
+    margin: 0.5rem;
+}
+
+.sideOne, .sideTwo {
+    flex: 1;
+    width: 0;
+    padding: 1rem;
+    background-color: #333127;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+div#profile {
+    display: flex
+;
+    background: #49473c;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.numbersbig{
+    display: inline-flex
+;
+    width: fit-content;
+    background: #21201a;
+    padding: 0.3rem;
+    border-radius: 0.5rem;
+    font-size: 2rem;
+}
+
+.section {
+    
+    display: flex
+;
+flex-direction: column;
+    background: #49473c;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+div#profits {
+    font-size: 1.3rem;
+    color: #86ff47;
+}
+
+.section h1 {
+    font-size: 0.8rem;
+    font-weight: normal;
+    margin: 0;
+    margin-bottom: 0.5rem;
+}
+
+#actionimps {
+    display: flex;
+    flex-direction: row;
+    gap: 0.3rem;
+}
+
+.btn {
+    display: flex
+;
+    padding: 0.5rem;
+    background: #9b915a;
+    border-radius: 0.5rem;
+    width: 0;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+
+div#achivements {
+    display: flex
+;
+    padding: 1rem;
+    align-items: center;
+    justify-content: center;
+}
