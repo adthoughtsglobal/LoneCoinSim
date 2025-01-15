@@ -1,6 +1,7 @@
 const ctx = document.getElementById('dynamicGraph').getContext('2d');
 const maxPoints = 30;
-let bought = 20;
+var bought = 0;
+var balance = 100;
 
 var data = {
     labels: [],
@@ -8,7 +9,7 @@ var data = {
         {
             label: 'Bought',
             data: [],
-            backgroundColor: 'rgb(251, 255, 43)',
+            backgroundColor: 'rgba(251, 255, 43, 0.5)',
             borderColor: 'rgba(75, 192, 192, 0.3)',
             borderWidth: 2,
             fill: 'origin',
@@ -19,7 +20,7 @@ var data = {
             data: [],
             borderColor: 'rgba(75, 192, 192, 0.3)',
             borderWidth: 2,
-            backgroundColor: 'rgb(109, 255, 255)',
+            backgroundColor: 'rgba(109, 255, 255, 0.5)',
             fill: 'origin',
         }
     ]
@@ -45,6 +46,10 @@ var config = {
                 min: 0,
                 title: { display: true, text: 'Value / Percentage' }
             }
+        },
+        animation: {
+            duration: 200,
+            easing: 'easeInSine'
         }
     }
 };
@@ -71,11 +76,11 @@ function updateValue() {
     let textdisp = 'Good Luck.';
     switch (mode) {
         case 'value hike':
-            value += Math.random() * 5 + 1;
+            value += Math.random() * 7 + 1;
             textdisp = 'Reported possible value hike';
             break;
         case 'depression':
-            value -= Math.random() * 5 + 1;
+            value -= Math.random() * 7 + 1;
             textdisp = 'Widespread economic depression reported.';
             break;
         case 'stable':
@@ -92,10 +97,29 @@ function updateValue() {
 }
 
 function updateGraph() {
+
+    var stockPrice = 50;
+    var sharesOwned = bought > 0 ? bought / stockPrice : 0;
+    var totalDividends = 0;
+
+    const dividendYield = 0.02;
+    function calculateDividends() {
+        if (bought > 0) {
+            const dividends = sharesOwned * stockPrice * dividendYield;
+            totalDividends += dividends;
+        }
+    }
+
     if (modeDuration === 0) getNextMode();
     updateValue();
 
-    const boughtPercentage = (bought / 100) * value;
+    stockPrice = Math.max(1, value);
+
+    const portfolioValue = bought > 0 ? sharesOwned * stockPrice : 0;
+    calculateDividends();
+    balance = bought > 0 ? portfolioValue + totalDividends : balance;
+
+    document.getElementById("profbal").innerText = `$${balance.toFixed(2)}`;
 
     if (data.labels.length >= maxPoints) {
         data.labels.shift();
@@ -104,10 +128,10 @@ function updateGraph() {
     }
 
     data.labels.push(currentTime);
-    data.datasets[1].data.push(value);
-    data.datasets[0].data.push(boughtPercentage);
+    data.datasets[1].data.push(stockPrice);
+    data.datasets[0].data.push(portfolioValue);
 
-    if (value >= config.options.scales.y.max) {
+    if (stockPrice >= config.options.scales.y.max) {
         config.options.scales.y.max += 10;
     }
 
@@ -117,3 +141,34 @@ function updateGraph() {
 }
 
 setInterval(updateGraph, 1000);
+
+const shareManager = {
+    shares: 0,
+    sellAll() {
+        if (this.shares > 0) {
+            balance += this.shares * value;
+            this.shares = 0;
+            document.getElementById("profbal").innerText = `$${balance.toFixed(2)}`;
+            document.getElementById("sharesOwned").innerText = `${this.shares} shares`;
+        }
+    },
+    buy(percentage) {
+        const maxAffordableShares = Math.floor(balance / value);
+        const sharesToBuy = Math.floor(maxAffordableShares * (percentage / 100));
+        if (sharesToBuy > 0) {
+            balance -= sharesToBuy * value;
+            this.shares += sharesToBuy;
+            document.getElementById("profbal").innerText = `$${balance.toFixed(2)}`;
+            document.getElementById("sharesOwned").innerText = `${this.shares} shares`;
+        }
+    },
+    sell(percentage) {
+        const sharesToSell = Math.floor(this.shares * (percentage / 100));
+        if (sharesToSell > 0) {
+            balance += sharesToSell * value;
+            this.shares -= sharesToSell;
+            document.getElementById("profbal").innerText = `$${balance.toFixed(2)}`;
+            document.getElementById("sharesOwned").innerText = `${this.shares} shares`;
+        }
+    }
+};
